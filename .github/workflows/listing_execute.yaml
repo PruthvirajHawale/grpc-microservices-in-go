@@ -33,8 +33,21 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+          # Set the GOPATH and GOBIN
+          echo "GOPATH=${HOME}/go" >> $GITHUB_ENV
+          echo "GOBIN=${HOME}/go/bin" >> $GITHUB_ENV
+
+          # Create the directories
+          mkdir -p ${{ env.GOPATH }}/bin
+          mkdir -p ${{ env.GOPATH }}/src
+
+          # Install protoc-gen-go and protoc-gen-go-grpc
+          GOBIN=${HOME}/go/bin go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          GOBIN=${HOME}/go/bin go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+          # Ensure the binaries are in PATH
+          echo "${HOME}/go/bin" >> $GITHUB_PATH
 
       # Go build cache
       - name: Cache Go build
